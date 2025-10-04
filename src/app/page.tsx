@@ -1,103 +1,213 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { TrackCard } from "@/components/track-card"
+import { ArtistCard } from "@/components/artist-card"
+import { AnimatedBackground } from "@/components/animated-background"
+import { Button } from "@/components/ui/button"
+import { mockTracks, mockArtists, mockLiquidityPools, mockLiquidityMixes, mockRecentlyPlayed } from "@/lib/mock-data"
+import { getGreeting, formatCurrency, formatPercentage } from "@/lib/utils/format"
+import { useWallet } from "@/hooks/use-wallet"
+import { TrendingUp, Sparkles, Flame } from "lucide-react"
+import Link from "next/link"
+import { useState, useEffect } from "react"
+
+export default function HomePage() {
+  const greeting = getGreeting()
+  const { isConnected } = useWallet()
+  const [activeCategory, setActiveCategory] = useState<"All" | "Music" | "Podcasts">("All")
+
+  useEffect(() => {
+    console.log("[v0] HomePage mounted, rendering", mockTracks.length, "tracks")
+    console.log("[v0] Liquidity mixes count:", mockLiquidityMixes.length)
+    console.log("[v0] Recently played count:", mockRecentlyPlayed.length)
+  }, [])
+
+  const trendingTracks = mockTracks.slice(0, 4)
+  const recommendedTracks = mockTracks.slice(2, 6)
+  const hotArtists = mockArtists.slice(0, 4)
+  const topPools = mockLiquidityPools.slice(0, 3)
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <>
+      <AnimatedBackground />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+      <div className="space-y-8 p-8">
+        <section className="space-y-3">
+          <h1 className="text-4xl font-bold text-white tracking-tight">{greeting}</h1>
+          <p className="text-lg text-gray-400">Discover new music and earn from your favorite artists</p>
+        </section>
+
+        <section className="flex gap-2 mt-2">
+          {(["All", "Music", "Podcasts"] as const).map((cat) => (
+            <button
+              key={cat}
+              className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                activeCategory === cat
+                  ? "gradient-purple-blue border-0 text-white scale-105"
+                  : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:scale-105"
+              }`}
+              onClick={() => setActiveCategory(cat)}
+            >
+              {cat}
+            </button>
+          ))}
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-xl font-bold text-white">Liquidity Mixes For You</h2>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
+            {mockLiquidityMixes.map((mix) => (
+              <div
+                key={mix.id}
+                className="glass-hover cursor-pointer rounded-lg p-3 transition-all duration-200 hover:scale-105"
+              >
+                <img
+                  src={mix.coverUrl || "/placeholder.svg"}
+                  alt={mix.title}
+                  className="mb-2 aspect-square w-full rounded-lg object-cover"
+                />
+                <h3 className="text-sm font-semibold text-white">{mix.title}</h3>
+                <p className="text-xs text-neutral-400">{mix.artists}</p>
+                <div className="mt-2 flex items-center justify-between">
+                  <span className="text-xs text-neutral-500">APR</span>
+                  <span className="text-xs font-bold text-green-400">{formatPercentage(mix.apr)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-xl font-bold text-white">{isConnected ? "Recently Staked" : "Recently Played"}</h2>
+          <div className="scrollbar-hide flex gap-4 overflow-x-auto">
+            {mockRecentlyPlayed.map((item) => (
+              <div
+                key={item.id}
+                className="glass-hover min-w-[150px] cursor-pointer rounded-lg p-3 transition-all duration-200 hover:scale-105"
+              >
+                <img
+                  src={item.coverUrl || "/placeholder.svg"}
+                  alt={item.title}
+                  className="mb-2 aspect-square w-full rounded-lg object-cover"
+                />
+                <h3 className="text-sm font-semibold text-white">{item.title}</h3>
+                <p className="text-xs text-neutral-400">{item.artist}</p>
+                {isConnected && item.isStaked && (
+                  <div className="mt-2 flex items-center gap-1">
+                    <TrendingUp className="h-3 w-3 text-green-400" />
+                    <span className="text-xs font-medium text-green-400">{formatCurrency(item.stakedAmount!)}</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Flame className="h-5 w-5 text-orange-500" />
+              <h2 className="text-2xl font-bold text-white">Trending Now</h2>
+            </div>
+            <Button
+              variant="ghost"
+              className="rounded-xl text-gray-400 transition-all duration-200 hover:text-white"
+              asChild
+            >
+              <Link href="/discover">View All</Link>
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {trendingTracks.map((track) => (
+              <TrackCard key={track.id} track={track} />
+            ))}
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-purple-500" />
+            <h2 className="text-2xl font-bold text-white">Recommended for You</h2>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {recommendedTracks.map((track) => (
+              <TrackCard key={track.id} track={track} />
+            ))}
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-white">Hot Artists</h2>
+            <Button
+              variant="ghost"
+              className="rounded-xl text-gray-400 transition-all duration-200 hover:text-white"
+              asChild
+            >
+              <Link href="/discover">View All</Link>
+            </Button>
+          </div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {hotArtists.map((artist) => (
+              <ArtistCard key={artist.id} artist={artist} />
+            ))}
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-green-500" />
+              <h2 className="text-2xl font-bold text-white">Music Liquidity Pools</h2>
+            </div>
+            <Button
+              variant="ghost"
+              className="rounded-xl text-gray-400 transition-all duration-200 hover:text-white"
+              asChild
+            >
+              <Link href="/liquidity">View All</Link>
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            {topPools.map((pool) => (
+              <Link key={pool.id} href={`/liquidity/${pool.id}`}>
+                <div className="glass-hover rounded-lg p-6 transition-all duration-200 hover:scale-[1.02]">
+                  <div className="mb-4 flex items-center gap-3">
+                    <div className="relative h-12 w-12 overflow-hidden rounded-xl">
+                      <img
+                        src={pool.artistImage || "/placeholder.svg"}
+                        alt={pool.artistName}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-white">{pool.artistName}</h3>
+                      <p className="text-sm text-gray-400">${pool.tokenSymbol}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-400">APR</span>
+                      <span className="text-lg font-bold text-green-400">{formatPercentage(pool.apr)}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-400">Total Staked</span>
+                      <span className="text-sm font-medium text-white">{formatCurrency(pool.totalStaked)}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-400">Token Price</span>
+                      <span className="text-sm font-medium text-white">{formatCurrency(pool.tokenPrice)}</span>
+                    </div>
+                  </div>
+                  <Button className="gradient-purple-blue mt-4 w-full rounded-full border-0 font-medium text-white transition-all duration-200 hover:opacity-90 hover:scale-105">
+                    Provide Liquidity
+                  </Button>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      </div>
+    </>
+  )
 }
