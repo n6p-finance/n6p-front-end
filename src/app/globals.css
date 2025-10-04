@@ -69,9 +69,106 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
   }
+}
+
+/* Glassmorphism utilities */
+.glass {
+  background: rgba(12, 12, 20, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(139, 92, 246, 0.1);
+}
+
+.glass-hover {
+  transition: all 0.2s ease-in-out;
+}
+
+.glass-hover:hover {
+  background: rgba(64, 64, 80, 0.7);
+  border-color: rgba(139, 92, 246, 0.3);
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Gradient backgrounds */
+.gradient-purple-blue {
+  background: linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(59, 130, 246) 100%);
+}
+
+.gradient-purple-pink {
+  background: linear-gradient(135deg, rgb(168, 85, 247) 0%, rgb(236, 72, 153) 100%);
+}
+
+.gradient-blue-cyan {
+  background: linear-gradient(135deg, rgb(59, 130, 246) 0%, rgb(34, 211, 238) 100%);
+}
+
+/* Mood-based gradients */
+.mood-chill {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(34, 211, 238, 0.1) 100%);
+}
+
+.mood-energetic {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(249, 115, 22, 0.1) 100%);
+}
+
+.mood-focus {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(12, 12, 20);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(39, 39, 58, 0.6);
+  border-radius: 4px;
+  transition: background 0.2s ease-in-out;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.8);
+}
+
+/* Hide scrollbars */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Animations */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(to right, transparent 0%, rgba(139, 92, 246, 0.1) 50%, transparent 100%);
+  background-size: 1000px 100%;
+}
+
+/* Focus glow effect for inputs */
+.focus-glow:focus {
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
 }
